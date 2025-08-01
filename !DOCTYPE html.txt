@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login & Pengumuman Kelulusan Mahasiswa Baru</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      width: 380px;
+      max-width: 90vw;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 28px;
+      color: #222;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      border-radius: 8px;
+      border: 1.8px solid #ccc;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .error {
+      color: #d9534f;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .result p {
+      font-size: 16px;
+      margin: 12px 0;
+      text-align: left;
+    }
+
+    .result p strong {
+      width: 160px;
+      display: inline-block;
+      color: #555;
+    }
+
+    .lulus {
+      color: green;
+      font-weight: 700;
+    }
+
+    .tidak-lulus {
+      color: red;
+      font-weight: 700;
+    }
+
+    .logout-btn {
+      margin-top: 28px;
+      background-color: #dc3545;
+    }
+
+    .logout-btn:hover {
+      background-color: #a71d2a;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="card" id="loginCard">
+    <h2>Login Mahasiswa Baru</h2>
+    <input type="text" id="nikInput" placeholder="Masukkan NIK (16 digit)" maxlength="16" />
+    <div class="error" id="errorMsg"></div>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <h2>Pengumuman Kelulusan</h2>
+    <div class="result" id="resultContent"></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+<script>
+  // Data mahasiswa (contoh)
+  const mahasiswaData = [
+    { nik: '1234567890123456', nama: 'Andi Wijaya', nomor: 'MB2023001', prodi: 'Teknik Informatika', status: 'Lulus' },
+    { nik: '2345678901234567', nama: 'Budi Santoso', nomor: 'MB2023002', prodi: 'Manajemen', status: 'Tidak Lulus' },
+    { nik: '3456789012345678', nama: 'Citra Dewi', nomor: 'MB2023003', prodi: 'Akuntansi', status: 'Lulus' },
+    { nik: '4567890123456789', nama: 'Dewi Lestari', nomor: 'MB2023004', prodi: 'Sistem Informasi', status: 'Lulus' },
+    { nik: '5678901234567890', nama: 'Eko Prasetyo', nomor: 'MB2023005', prodi: 'Ekonomi', status: 'Tidak Lulus' }
+  ];
+
+  const loginCard = document.getElementById('loginCard');
+  const resultCard = document.getElementById('resultCard');
+  const errorMsg = document.getElementById('errorMsg');
+  const resultContent = document.getElementById('resultContent');
+  const nikInput = document.getElementById('nikInput');
+
+  function login() {
+    const nik = nikInput.value.trim();
+
+    errorMsg.textContent = '';
+
+    if (nik.length !== 16 || !/^\d{16}$/.test(nik)) {
+      errorMsg.textContent = 'NIK harus 16 digit angka.';
+      return;
+    }
+
+    const mahasiswa = mahasiswaData.find(m => m.nik === nik);
+
+    if (!mahasiswa) {
+      errorMsg.textContent = 'NIK tidak ditemukan. Periksa kembali dan coba lagi.';
+      return;
+    }
+
+    // Tampilkan data mahasiswa
+    loginCard.style.display = 'none';
+    resultCard.style.display = 'block';
+
+    const statusClass = mahasiswa.status.toLowerCase().replace(' ', '-');
+
+    resultContent.innerHTML = `
+      <p><strong>Nama:</strong> ${mahasiswa.nama}</p>
+      <p><strong>Nomor Pendaftaran:</strong> ${mahasiswa.nomor}</p>
+      <p><strong>Program Studi Pilihan:</strong> ${mahasiswa.prodi}</p>
+      <p><strong>Status Kelulusan:</strong> <span class="${statusClass}">${mahasiswa.status}</span></p>
+    `;
+  }
+
+  function logout() {
+    nikInput.value = '';
+    errorMsg.textContent = '';
+    resultContent.innerHTML = '';
+    resultCard.style.display = 'none';
+    loginCard.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
