@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengumuman Kelulusan - Universitas Audi Indonesia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://penjamu.universitasaudi.ac.id/wp-content/uploads/2023/05/bg-pmb1-scaled.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+    }
+
+    button {
+      background: #27ae60;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-logout {
+      background: #e74c3c;
+      margin-top: 20px;
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: left;
+      color: #fff;
+    }
+
+    .result p {
+      margin: 6px 0;
+    }
+
+    .label {
+      font-weight: 600;
+    }
+
+    .qr-code {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    canvas {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay">
+    <div class="container" id="loginBox">
+      <h1>Login Pengumuman Kelulusan</h1>
+      <input type="text" id="nama" placeholder="Nama Lengkap" />
+      <input type="text" id="nik" placeholder="NIK" />
+      <button onclick="cekKelulusan()">Lihat Pengumuman</button>
+    </div>
+
+    <div class="container" id="hasilBox" style="display: none;">
+      <h1>Hasil Kelulusan</h1>
+      <div class="result">
+        <p><span class="label">Nama:</span> <span id="r_nama"></span></p>
+        <p><span class="label">Nomor Pendaftaran:</span> <span id="r_no"></span></p>
+        <p><span class="label">Jalur Pendaftaran:</span> <span id="r_jalur"></span></p>
+        <p><span class="label">Program Studi:</span> <span id="r_prodi"></span></p>
+        <p><span class="label">Fakultas:</span> <span id="r_fakultas"></span></p>
+        <p><span class="label">Status Kelulusan:</span> <span id="r_status"></span></p>
+      </div>
+      <div class="qr-code">
+        <p style="font-size: 14px;">Scan QR Code untuk unduh dokumen kelulusan</p>
+        <canvas id="qr"></canvas>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="footer">
+      © 2025 Universitas Audi Indonesia
+    </div>
+  </div>
+
+  <script>
+    const dataMahasiswa = [{
+        nama: "Idkholah Yusuf",
+        nik: "1234567890123456",
+        no_pendaftaran: "UAI2025001",
+        jalur: "Reguler",
+        prodi: "Sistem Informasi",
+        fakultas: "Ilmu Komputer",
+        status: "LULUS",
+        link: "https://docs.google.com/spreadsheets/d/1PKcoKMkFfI_eH4CQfwdjgUZ3E8VZ6LNa/edit?usp=drive_link&ouid=110763640426614858341&rtpof=true&sd=true"
+      },
+      {
+        nama: "Budi Santoso",
+        nik: "9876543210123456",
+        no_pendaftaran: "UAI2025002",
+        jalur: "Beasiswa",
+        prodi: "Manajemen",
+        fakultas: "Ekonomi dan Bisnis",
+        status: "LULUS",
+        link: "https://drive.google.com/another-link"
+      }
+    ];
+
+    function cekKelulusan() {
+      const nama = document.getElementById("nama").value.trim().toLowerCase();
+      const nik = document.getElementById("nik").value.trim();
+      const mhs = dataMahasiswa.find(x => x.nama.toLowerCase() === nama && x.nik === nik);
+      if (mhs) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("hasilBox").style.display = "block";
+        document.getElementById("r_nama").textContent = mhs.nama;
+        document.getElementById("r_no").textContent = mhs.no_pendaftaran;
+        document.getElementById("r_jalur").textContent = mhs.jalur;
+        document.getElementById("r_prodi").textContent = mhs.prodi;
+        document.getElementById("r_fakultas").textContent = mhs.fakultas;
+        document.getElementById("r_status").textContent = mhs.status;
+        // Buat QR Code
+        QRCode.toCanvas(document.getElementById('qr'), mhs.link, {
+          width: 120
+        }, function(error) {
+          if (error) console.error(error);
+        });
+      } else {
+        alert("Data tidak ditemukan. Periksa kembali Nama dan NIK Anda.");
+      }
+    }
+
+    function logout() {
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("hasilBox").style.display = "none";
+      // Kosongkan input dan hasil
+      document.getElementById("nama").value = "";
+      document.getElementById("nik").value = "";
+      document.getElementById("r_nama").textContent = "";
+      document.getElementById("r_no").textContent = "";
+      document.getElementById("r_jalur").textContent = "";
+      document.getElementById("r_prodi").textContent = "";
+      document.getElementById("r_fakultas").textContent = "";
+      document.getElementById("r_status").textContent = "";
+      const canvas = document.getElementById("qr");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  </script>
+</body>
+
+</html>
